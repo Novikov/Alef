@@ -1,8 +1,10 @@
 package com.app.alef.data.api
 
-import com.app.alef.data.model.ItemsResponse
+import io.reactivex.Observable
 import io.reactivex.Single
 import retrofit2.http.GET
+import retrofit2.http.Url
+
 
 interface AlefApiService {
     @GET("task-m-001/list.php")

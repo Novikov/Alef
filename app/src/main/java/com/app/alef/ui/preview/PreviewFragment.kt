@@ -9,6 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.app.alef.BaseApplication
 import com.app.alef.R
 import com.app.alef.di.view_models.ViewModelProviderFactory
@@ -18,17 +21,18 @@ import javax.inject.Inject
 class PreviewFragment : Fragment() {
 
     private lateinit var viewModel: PreviewViewModel
+    private lateinit var itemsRecyclerView: RecyclerView
 
     @Inject
     lateinit var providerFactory: ViewModelProviderFactory
 
     @Inject
-    lateinit var picasso: Picasso
+    lateinit var adapter: PreviewItemsAdapter
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         (requireActivity().application as BaseApplication).appComponent.getPreviewComponent()
-            .create().inject(this)
+            .create(this.requireContext()).inject(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,8 +47,12 @@ class PreviewFragment : Fragment() {
         // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_preview, container, false)
 
+        itemsRecyclerView = view.findViewById(R.id.items_recycler_view)
+        itemsRecyclerView.layoutManager = GridLayoutManager(this.requireContext(), 3)
+        itemsRecyclerView.adapter = adapter
+
         viewModel.items.observe(viewLifecycleOwner, {
-            Log.i(TAG, "converted data $it")
+           adapter.dataSource = it
         })
 
         return view

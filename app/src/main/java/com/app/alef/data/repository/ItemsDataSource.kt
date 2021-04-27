@@ -4,11 +4,14 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.app.alef.data.api.AlefApiService
-import com.app.alef.data.model.ItemsResponseConverter
 import com.app.alef.data.model.ItemsResponse
+import com.app.alef.data.model.ItemsResponseConverter
 import com.app.alef.ui.preview.di.PreviewScope
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import java.net.HttpURLConnection
+import java.net.URL
 import javax.inject.Inject
 
 @PreviewScope
@@ -16,7 +19,7 @@ class ItemsDataSource @Inject constructor(
     private val apiService: AlefApiService,
     private val compositeDisposable: CompositeDisposable,
     private val _networkState: MutableLiveData<NetworkState>,
-    private val _downloadedItemsResponse : MutableLiveData <ItemsResponse>,
+    private val _downloadedItemsResponse: MutableLiveData<ItemsResponse>,
     private val itemsResponseConverter: ItemsResponseConverter
 ){
     val networkState: LiveData<NetworkState>
@@ -33,19 +36,39 @@ class ItemsDataSource @Inject constructor(
                 apiService.getItems()
                     .observeOn(Schedulers.io())
                     .subscribeOn(Schedulers.io())
-                    .subscribe({
-                        val itemsResponse = itemsResponseConverter.getItemResponse(it)
+                    .flatMapObservable { items ->
+                        Observable.fromIterable(items)
+                            .filter {
+                               var code = 0
+                                try {
+                                    val url = URL(it)
+                                    val connection = url.openConnection() as HttpURLConnection
+                                    connection.requestMethod = "GET"
+                                    connection.connect()
+                                    code = connection.responseCode
+                                }catch (e: Exception) {
+                                    Log.e(TAG, e.message.toString())
+                                }
+                                code==200
+                            }
+                            .observeOn(Schedulers.io())
+                            .subscribeOn(Schedulers.io())
+                    }
+                    .toList()
+                    .subscribe({ urlList ->
+                        Log.i(TAG, "getItems: $urlList")
+                        val itemsResponse = itemsResponseConverter.getItemResponse(urlList)
                         _downloadedItemsResponse.postValue(itemsResponse)
                         _networkState.postValue(NetworkState.LOADED)
                     },
                         {
+                            Log.i(TAG, "Error - $it")
                             _networkState.postValue(NetworkState.ERROR)
                         })
             )
         }catch (e: Exception) {
             Log.e(TAG, e.message.toString())
         }
-
     }
 
     companion object {

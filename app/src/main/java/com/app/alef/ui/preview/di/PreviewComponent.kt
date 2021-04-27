@@ -1,7 +1,9 @@
 package com.app.alef.ui.preview.di
 
+import android.content.Context
 import com.app.alef.di.view_models.ViewModelFactoryModule
 import com.app.alef.ui.preview.PreviewFragment
+import dagger.BindsInstance
 import dagger.Subcomponent
 
 @PreviewScope
@@ -10,7 +12,7 @@ interface PreviewComponent {
 
     @Subcomponent.Factory
     interface Factory {
-        fun create(): PreviewComponent
+        fun create(@BindsInstance context: Context): PreviewComponent
     }
 
     fun inject(previewFragment: PreviewFragment)
