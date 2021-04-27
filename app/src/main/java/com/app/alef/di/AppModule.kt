@@ -18,7 +18,7 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideNasaApiService() : AlefApiService {
+    fun provideAlefApiService() : AlefApiService {
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
 
