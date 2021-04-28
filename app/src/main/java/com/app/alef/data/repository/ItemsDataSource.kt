@@ -7,6 +7,7 @@ import com.app.alef.data.api.AlefApiService
 import com.app.alef.data.model.ItemsResponse
 import com.app.alef.data.model.ItemsResponseConverter
 import com.app.alef.ui.preview.di.PreviewScope
+import com.app.alef.utils.NO_INTERNET_ERROR_MSG
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -21,14 +22,14 @@ class ItemsDataSource @Inject constructor(
     private val _networkState: MutableLiveData<NetworkState>,
     private val _downloadedItemsResponse: MutableLiveData<ItemsResponse>,
     private val itemsResponseConverter: ItemsResponseConverter
-){
+) {
     val networkState: LiveData<NetworkState>
         get() = _networkState
 
-    val downloadedItems : LiveData<ItemsResponse>
-    get() = _downloadedItemsResponse
+    val downloadedItems: LiveData<ItemsResponse>
+        get() = _downloadedItemsResponse
 
-    fun getItems(){
+    fun getItems() {
         _networkState.postValue(NetworkState.LOADING)
 
         try {
@@ -39,34 +40,40 @@ class ItemsDataSource @Inject constructor(
                     .flatMapObservable { items ->
                         Observable.fromIterable(items)
                             .filter {
-                               var code = 0
+                                var code = 0
                                 try {
                                     val url = URL(it)
                                     val connection = url.openConnection() as HttpURLConnection
                                     connection.requestMethod = "GET"
                                     connection.connect()
                                     code = connection.responseCode
-                                }catch (e: Exception) {
+                                } catch (e: Exception) {
                                     Log.e(TAG, e.message.toString())
                                 }
-                                code==200
+                                code == 200
                             }
                             .observeOn(Schedulers.io())
                             .subscribeOn(Schedulers.io())
                     }
                     .toList()
                     .subscribe({ urlList ->
-                        Log.i(TAG, "getItems: $urlList")
                         val itemsResponse = itemsResponseConverter.getItemResponse(urlList)
                         _downloadedItemsResponse.postValue(itemsResponse)
                         _networkState.postValue(NetworkState.LOADED)
                     },
                         {
-                            Log.i(TAG, "Error - $it")
-                            _networkState.postValue(NetworkState.ERROR)
+                            when {
+                                it.message?.contains(NO_INTERNET_ERROR_MSG)!! -> {
+                                    _networkState.postValue(NetworkState.NO_INTERNET)
+                                }
+                                else -> {
+                                    Log.i(TAG, it.message.toString())
+                                    _networkState.postValue(NetworkState.ERROR)
+                                }
+                            }
                         })
             )
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             Log.e(TAG, e.message.toString())
         }
     }

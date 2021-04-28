@@ -16,7 +16,6 @@ class ItemsResponseConverter @Inject constructor(){
         return ItemsResponse(itemsResponse)
     }
 
-
     companion object {
         private const val TAG = "ItemsResponseConverter"
     }

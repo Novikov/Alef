@@ -5,4 +5,8 @@ interface Activity {
     fun hideProgressBar()
     fun hideActionBar()
     fun showActionBar()
+    fun showErrorMessage(msg: String)
+    fun clearErrorMessage()
+    fun isErrorMessageShoved():Boolean
+    fun retry()
 }

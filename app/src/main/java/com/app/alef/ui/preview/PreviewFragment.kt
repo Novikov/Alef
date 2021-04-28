@@ -51,15 +51,15 @@ class PreviewFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view =  inflater.inflate(R.layout.fragment_preview, container, false)
-        val itemsRecyclerView:RecyclerView = view.findViewById(R.id.items_recycler_view)
+        val view = inflater.inflate(R.layout.fragment_preview, container, false)
+        val itemsRecyclerView: RecyclerView = view.findViewById(R.id.items_recycler_view)
 
         val orientation = resources.configuration.orientation
-        when(orientation){
+        when (orientation) {
             1 -> {
                 activityContract?.showActionBar()
             }
-            2-> {
+            2 -> {
                 activityContract?.hideActionBar()
             }
         }
@@ -72,7 +72,7 @@ class PreviewFragment : Fragment() {
         }
 
         itemsRecyclerView.layoutManager = GridLayoutManager(this.requireContext(), spanCount)
-        val adapter = PreviewItemsAdapter(picasso, this.requireContext(),spanCount)
+        val adapter = PreviewItemsAdapter(picasso, this.requireContext(), spanCount)
         itemsRecyclerView.adapter = adapter
 
         viewModel.items.observe(viewLifecycleOwner, {
@@ -87,7 +87,16 @@ class PreviewFragment : Fragment() {
                 NetworkState.LOADED -> {
                     activityContract?.hideProgressBar()
                 }
-            }})
+                NetworkState.NO_INTERNET -> {
+                    activityContract?.hideProgressBar()
+                    activityContract?.showErrorMessage(NetworkState.NO_INTERNET.msg)
+                }
+                NetworkState.ERROR -> {
+                    activityContract?.hideProgressBar()
+                    activityContract?.showErrorMessage(NetworkState.ERROR.msg)
+                }
+            }
+        })
 
         return view
     }

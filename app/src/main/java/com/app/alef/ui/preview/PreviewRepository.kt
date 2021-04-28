@@ -8,7 +8,7 @@ import com.app.alef.ui.preview.di.PreviewScope
 import javax.inject.Inject
 
 @PreviewScope
-class PreviewRepository @Inject constructor(private val itemsDataSource:ItemsDataSource){
+class PreviewRepository @Inject constructor(private val itemsDataSource: ItemsDataSource) {
     fun getItems(): LiveData<ItemsResponse> {
         itemsDataSource.getItems()
         return itemsDataSource.downloadedItems

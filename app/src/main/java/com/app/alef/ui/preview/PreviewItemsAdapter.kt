@@ -13,9 +13,13 @@ import com.app.alef.data.model.ItemsResponse
 import com.squareup.picasso.Picasso
 
 
-class PreviewItemsAdapter (private val picasso: Picasso, private val context: Context, private val spanCount: Int):RecyclerView.Adapter<PreviewItemsAdapter.ItemViewHolder>(){
+class PreviewItemsAdapter(
+    private val picasso: Picasso,
+    private val context: Context,
+    private val spanCount: Int
+) : RecyclerView.Adapter<PreviewItemsAdapter.ItemViewHolder>() {
 
-    var dataSource:ItemsResponse = ItemsResponse(arrayListOf())
+    var dataSource: ItemsResponse = ItemsResponse(arrayListOf())
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -23,7 +27,7 @@ class PreviewItemsAdapter (private val picasso: Picasso, private val context: Co
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val inflater: LayoutInflater =
-        context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val width = parent.measuredWidth / spanCount
         val view = inflater.inflate(R.layout.item_view, parent, false)
         view.layoutParams.width = width
@@ -36,15 +40,17 @@ class PreviewItemsAdapter (private val picasso: Picasso, private val context: Co
     }
 
     override fun getItemCount(): Int {
-       return dataSource.itemsList.size
+        return dataSource.itemsList.size
     }
 
-    inner class ItemViewHolder (view: View) : RecyclerView.ViewHolder(view){
+    inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageViewItem = view.findViewById<ImageView>(R.id.image_view_item)
 
-        fun bind(uri: Uri){
+        fun bind(uri: Uri) {
             imageViewItem.setOnClickListener {
-                imageViewItem.findNavController().navigate(PreviewFragmentDirections.actionPreviewFragmentToDetailItemFragment(uri.toString()))
+                imageViewItem.findNavController().navigate(
+                    PreviewFragmentDirections.actionPreviewFragmentToDetailItemFragment(uri.toString())
+                )
             }
 
             picasso.load(uri)
