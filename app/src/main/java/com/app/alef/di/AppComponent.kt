@@ -1,5 +1,6 @@
 package com.app.alef.di
 
+import com.app.alef.ui.detail.di.DetailComponent
 import com.app.alef.ui.preview.di.PreviewComponent
 import dagger.Component
 import javax.inject.Singleton
@@ -15,4 +16,5 @@ interface AppComponent {
     }
 
     fun getPreviewComponent(): PreviewComponent.Factory
+    fun getDetailComponent(): DetailComponent.Factory
 }

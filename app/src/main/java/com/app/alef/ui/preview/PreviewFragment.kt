@@ -2,15 +2,12 @@ package com.app.alef.ui.preview
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.app.alef.BaseApplication
 import com.app.alef.R
@@ -18,16 +15,16 @@ import com.app.alef.di.view_models.ViewModelProviderFactory
 import com.squareup.picasso.Picasso
 import javax.inject.Inject
 
+
 class PreviewFragment : Fragment() {
 
     private lateinit var viewModel: PreviewViewModel
-    private lateinit var itemsRecyclerView: RecyclerView
 
     @Inject
     lateinit var providerFactory: ViewModelProviderFactory
 
     @Inject
-    lateinit var adapter: PreviewItemsAdapter
+    lateinit var picasso: Picasso
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -46,13 +43,21 @@ class PreviewFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_preview, container, false)
+        val itemsRecyclerView:RecyclerView = view.findViewById(R.id.items_recycler_view)
 
-        itemsRecyclerView = view.findViewById(R.id.items_recycler_view)
-        itemsRecyclerView.layoutManager = GridLayoutManager(this.requireContext(), 3)
+        val isTablet = resources.getBoolean(R.bool.isTablet)
+        val spanCount = if (isTablet) {
+            3
+        } else {
+            2
+        }
+
+        itemsRecyclerView.layoutManager = GridLayoutManager(this.requireContext(), spanCount)
+        val adapter = PreviewItemsAdapter(picasso, this.requireContext(),spanCount)
         itemsRecyclerView.adapter = adapter
 
         viewModel.items.observe(viewLifecycleOwner, {
-           adapter.dataSource = it
+            adapter.dataSource = it
         })
 
         return view

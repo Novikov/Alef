@@ -15,7 +15,11 @@
     </fragment>
     <fragment
         android:id="@+id/detailItemFragment"
-        android:name="com.app.alef.ui.detail.DetailItemFragment"
+        android:name="com.app.alef.ui.detail.DetailFragment"
         android:label="fragment_detail"
-        tools:layout="@layout/fragment_detail" />
+        tools:layout="@layout/fragment_detail" >
+        <argument
+            android:name="Url"
+            app:argType="string" />
+    </fragment>
 </navigation>
