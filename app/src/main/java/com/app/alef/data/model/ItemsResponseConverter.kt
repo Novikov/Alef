@@ -1,10 +1,6 @@
 package com.app.alef.data.model
 
 import android.net.Uri
-import android.util.Log
-import com.app.alef.data.repository.ItemsDataSource
-import java.net.HttpURLConnection
-import java.net.URL
 import javax.inject.Inject
 
 class ItemsResponseConverter @Inject constructor(){

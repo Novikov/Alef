@@ -11,13 +11,15 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.app.alef.BaseApplication
 import com.app.alef.R
+import com.app.alef.data.repository.NetworkState
 import com.app.alef.di.view_models.ViewModelProviderFactory
+import com.app.alef.ui.activity.Activity
 import com.squareup.picasso.Picasso
 import javax.inject.Inject
 
 
 class PreviewFragment : Fragment() {
-
+    private var activityContract: Activity? = null
     private lateinit var viewModel: PreviewViewModel
 
     @Inject
@@ -28,6 +30,13 @@ class PreviewFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+
+        try {
+            activityContract = context as Activity
+        } catch (e: ClassCastException) {
+            throw ClassCastException(context.toString() + "Activity have to implement interface Activity")
+        }
+
         (requireActivity().application as BaseApplication).appComponent.getPreviewComponent()
             .create(this.requireContext()).inject(this)
     }
@@ -45,6 +54,16 @@ class PreviewFragment : Fragment() {
         val view =  inflater.inflate(R.layout.fragment_preview, container, false)
         val itemsRecyclerView:RecyclerView = view.findViewById(R.id.items_recycler_view)
 
+        val orientation = resources.configuration.orientation
+        when(orientation){
+            1 -> {
+                activityContract?.showActionBar()
+            }
+            2-> {
+                activityContract?.hideActionBar()
+            }
+        }
+
         val isTablet = resources.getBoolean(R.bool.isTablet)
         val spanCount = if (isTablet) {
             3
@@ -59,6 +78,16 @@ class PreviewFragment : Fragment() {
         viewModel.items.observe(viewLifecycleOwner, {
             adapter.dataSource = it
         })
+
+        viewModel.networkState.observe(viewLifecycleOwner, {
+            when (it) {
+                NetworkState.LOADING -> {
+                    activityContract?.showProgressBar()
+                }
+                NetworkState.LOADED -> {
+                    activityContract?.hideProgressBar()
+                }
+            }})
 
         return view
     }

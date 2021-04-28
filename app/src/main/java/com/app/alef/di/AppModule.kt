@@ -1,8 +1,8 @@
 package com.app.alef.di
 
+import com.app.alef.data.api.AlefApiService
 import com.app.alef.utils.ALEF_API_BASE_URL
 import com.google.gson.GsonBuilder
-import com.app.alef.data.api.AlefApiService
 import com.squareup.picasso.Picasso
 import dagger.Module
 import dagger.Provides

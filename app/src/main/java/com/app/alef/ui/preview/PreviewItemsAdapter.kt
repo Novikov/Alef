@@ -2,7 +2,6 @@ package com.app.alef.ui.preview
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.app.alef.R
 import com.app.alef.data.model.ItemsResponse
 import com.squareup.picasso.Picasso
-
 
 
 class PreviewItemsAdapter (private val picasso: Picasso, private val context: Context, private val spanCount: Int):RecyclerView.Adapter<PreviewItemsAdapter.ItemViewHolder>(){
